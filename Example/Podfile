@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'MRJDownLoaderSession_Example' do
+  pod 'MRJDownLoaderSession', :path => '../'
+
+  target 'MRJDownLoaderSession_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
