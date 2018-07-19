@@ -39,8 +39,6 @@
     [self checkFileWithUrl:url responseBlock:^(NSURLResponse *response) {
         // 判断在本地是否有文件
         if ([self checkLoaclFileInfo]) {
-            // 下载完成
-            NSLog(@"下载完成");
             NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
             self.task = [session downloadTaskWithResumeData:[self checkLoaclFileInfo]];
             [self.task resume];
@@ -49,8 +47,6 @@
         // 开始下载
         [self downloadFile];
     }];
-    
-    
 }
 
 #pragma mark 私有方法
@@ -64,7 +60,6 @@
         
         // 建议保存的文件名,将在的文件保存在tmp ,系统会自动回收
         self.filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:response.suggestedFilename];
-        NSLog(@"-=-=-=-=-=-=-=-=-=-=-%@\n%@", response, self.filePath);
         
         if (responseBlock){
             responseBlock(response);
@@ -81,12 +76,7 @@
 /// 文件下载
 - (void)downloadFile {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.downUrl];
-    /// 在请求头里有一个关键字段Range，用来告诉服务器我需要从哪里开始已下载
-    /// bytes=10- 表示从10字节以后完全获取
-    /// bytes=20-400 表示从20-400之间的数据
-    /// bytes= -500 表示需要最后的500字节数据
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-    
     self.task = [session downloadTaskWithRequest:request];
     [self.task resume];
 }
@@ -95,10 +85,10 @@
     
 /// 任务暂停
 - (void)pause {
+    __weak typeof(self) weakSelf = self;
     [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
-        NSLog(@"filepath = %@", _filePath);
-        [[NSUserDefaults standardUserDefaults] setObject:resumeData forKey:_filePath];
-        self.task = nil;
+        [[NSUserDefaults standardUserDefaults] setObject:resumeData forKey:weakSelf.filePath];
+        weakSelf.task = nil;
     }];
 }
 
@@ -108,7 +98,7 @@
 didFinishDownloadingToURL:(NSURL *)location {
     if (self.completeBlock) {
         NSError *error = nil;
-        NSURL *fileDownUrl = [NSURL URLWithString:[self.filePath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];
         [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
         NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
         self.completeBlock(location.path);

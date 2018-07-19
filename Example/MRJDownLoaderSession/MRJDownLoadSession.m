@@ -64,7 +64,6 @@
         
         // 建议保存的文件名,将在的文件保存在tmp ,系统会自动回收
         self.filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:response.suggestedFilename];
-        NSLog(@"-=-=-=-=-=-=-=-=-=-=-%@\n%@", response, self.filePath);
         
         if (responseBlock){
             responseBlock(response);
@@ -108,7 +107,7 @@
 didFinishDownloadingToURL:(NSURL *)location {
     if (self.completeBlock) {
         NSError *error = nil;
-        NSURL *fileDownUrl = [NSURL URLWithString:[self.filePath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];;
         [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
         NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
         self.completeBlock(location.path);

@@ -257,6 +257,9 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "mrjlovetian@gmail.com";
 				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = W3S42S92Y7;
+					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -497,6 +500,7 @@
 			baseConfigurationReference = 0BA0D3AAEB99141AC8338B3E /* Pods-MRJDownLoaderSession_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = W3S42S92Y7;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRJDownLoaderSession/MRJDownLoaderSession-Prefix.pch";
 				INFOPLIST_FILE = "MRJDownLoaderSession/MRJDownLoaderSession-Info.plist";
@@ -512,6 +516,7 @@
 			baseConfigurationReference = 0A2F098699318D7E25791262 /* Pods-MRJDownLoaderSession_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = W3S42S92Y7;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRJDownLoaderSession/MRJDownLoaderSession-Prefix.pch";
 				INFOPLIST_FILE = "MRJDownLoaderSession/MRJDownLoaderSession-Info.plist";
