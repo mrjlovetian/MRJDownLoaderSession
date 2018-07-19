@@ -1,0 +1,16 @@
+PODS:
+  - MRJDownLoaderSession (0.1.0)
+
+DEPENDENCIES:
+  - MRJDownLoaderSession (from `../`)
+
+EXTERNAL SOURCES:
+  MRJDownLoaderSession:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  MRJDownLoaderSession: 4d4d10055750925c523c77acf2145cc39f88f408
+
+PODFILE CHECKSUM: 27f5f7b34c9db8bd5a349071edb7ab59a56240ed
+
+COCOAPODS: 1.5.3

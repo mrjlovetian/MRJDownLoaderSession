@@ -1,0 +1,6 @@
+framework module MRJDownLoaderSession {
+  umbrella header "MRJDownLoaderSession-umbrella.h"
+
+  export *
+  module * { export * }
+}
