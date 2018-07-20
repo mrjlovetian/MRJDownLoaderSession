@@ -100,7 +100,6 @@ didFinishDownloadingToURL:(NSURL *)location {
         NSError *error = nil;
         NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];
         [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
-        NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
         self.completeBlock(location.path);
     }
 }
