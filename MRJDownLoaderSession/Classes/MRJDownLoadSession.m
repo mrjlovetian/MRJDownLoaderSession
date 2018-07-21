@@ -8,7 +8,7 @@
 
 #import "MRJDownLoadSession.h"
 
-@interface MRJDownLoadSession() <NSURLSessionDownloadDelegate>
+@interface MRJDownLoadSession() <NSURLSessionDownloadDelegate, NSURLSessionDataDelegate>
 
 /// 下载地址
 @property (nonatomic, strong) NSURL *downUrl;
@@ -121,6 +121,35 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
     if (self.errorBlock) {
         self.errorBlock(@"下载出错了");
     }
+}
+
+#pragma mark NSURLSessionDataDelegate
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
+ willCacheResponse:(NSCachedURLResponse *)proposedResponse
+ completionHandler:(void (^)(NSCachedURLResponse * _Nullable cachedResponse))completionHandler {
+    
 }
 
 @end
