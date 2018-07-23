@@ -15,7 +15,7 @@
 /// 文件下载存放目录
 @property (nonatomic, copy) NSString *filePath;
 /// 初始化URL链接类
-@property (nonatomic, strong) NSURLSessionDownloadTask *task;
+@property (nonatomic, strong) NSURLSessionDataTask *task;
 
 /// 下载回调进度
 @property (nonatomic, copy) void (^progressBlock)(float);
@@ -23,6 +23,16 @@
 @property (nonatomic, copy) void (^completeBlock)(NSString *);
 /// 下载失败完成回调
 @property (nonatomic, copy) void (^errorBlock)(NSString *);
+
+
+/// 当前文件保存长度
+@property (nonatomic, assign) long long  curreLength;
+
+/// 服务器给定下载文件长度
+@property (nonatomic, assign) long long expectedContentLength;
+
+/// 文件输入输出流，用来保存下载文件
+@property (nonatomic, strong) NSOutputStream *outPutFileStream;
 
 @end
 
@@ -38,12 +48,16 @@
     // 检查远程服务器文件大小
     [self checkFileWithUrl:url responseBlock:^(NSURLResponse *response) {
         // 判断在本地是否有文件
-        if ([self checkLoaclFileInfo]) {
+        if (![self checkLoaclFileInfo]) {
             // 下载完成
-            NSLog(@"下载完成");
-            NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-            self.task = [session downloadTaskWithResumeData:[self checkLoaclFileInfo]];
-            [self.task resume];
+            // 下载完成
+            if (self.completeBlock) {
+                self.completeBlock(self.filePath);
+            }
+//            NSLog(@"下载完成");
+//            NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+//            self.task = [session downloadTaskWithResumeData:[self checkLoaclFileInfo]];
+//            [self.task resume];
             return;
         };
         // 开始下载
@@ -60,6 +74,7 @@
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         
+        self.expectedContentLength = response.expectedContentLength;
         // 建议保存的文件名,将在的文件保存在tmp ,系统会自动回收
         self.filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:response.suggestedFilename];
         
@@ -71,20 +86,45 @@
 }
 
 /// 拿到本地已下载文件信息
-- (NSData *)checkLoaclFileInfo {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:_filePath];
+//- (NSData *)checkLoaclFileInfo {
+//    return [[NSUserDefaults standardUserDefaults] objectForKey:_filePath];
+//}
+
+/// 拿到本地已下载文件信息
+- (BOOL)checkLoaclFileInfo {
+    long long localFileSize = 0;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]) {
+        NSDictionary *fileDic = [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:NULL];
+        localFileSize = fileDic.fileSize;
+    };
+    
+    /// 本地文件大于服务器文件时删除本地文件，这样的情况就是服务器换文件，或者下载出错
+    if (localFileSize > self.expectedContentLength) {
+        localFileSize = 0;
+        [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:NULL];
+    }
+    
+    self.curreLength = localFileSize;
+    /// 如果本地文件大小和服务器文件大小相等，可认定文件已下载完成，当然还是以MD5校验为准
+    if (self.curreLength == self.expectedContentLength) {
+        // 下载完成
+        return NO;
+    }
+    return YES;
 }
 
 /// 文件下载
 - (void)downloadFile {
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.downUrl];
     /// 在请求头里有一个关键字段Range，用来告诉服务器我需要从哪里开始已下载
     /// bytes=10- 表示从10字节以后完全获取
     /// bytes=20-400 表示从20-400之间的数据
     /// bytes= -500 表示需要最后的500字节数据
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-    
-    self.task = [session downloadTaskWithRequest:request];
+    [request setValue:[NSString stringWithFormat:@"bytes=%lld-", self.curreLength] forHTTPHeaderField:@"Range"];
+//    self.task = [session downloadTaskWithRequest:request];
+    self.task = [session dataTaskWithRequest:request];
     [self.task resume];
 }
 
@@ -92,11 +132,12 @@
     
 /// 任务暂停
 - (void)pause {
-    [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
-        NSLog(@"filepath = %@", _filePath);
-        [[NSUserDefaults standardUserDefaults] setObject:resumeData forKey:_filePath];
-        self.task = nil;
-    }];
+    [self.task cancel];
+//    [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
+//        NSLog(@"filepath = %@", _filePath);
+//        [[NSUserDefaults standardUserDefaults] setObject:resumeData forKey:_filePath];
+//        self.task = nil;
+//    }];
 }
 
 #pragma mark NSURLConnectionDataDelegate
@@ -136,9 +177,11 @@
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
-    NSLog(@"receive data");
+    NSLog(@"start data");
     /** b. 让任务继续正常进行.(如果没有写这行代码, 将不会执行下面的代理方法.) */
     completionHandler(NSURLSessionResponseAllow);
+    self.outPutFileStream = [[NSOutputStream alloc] initToFileAtPath:self.filePath append:YES];
+    [self.outPutFileStream open];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
@@ -148,6 +191,16 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data {
+    [self.outPutFileStream write:data.bytes maxLength:data.length];
+    self.curreLength += data.length;
+    float progress = (float)self.curreLength / self.expectedContentLength;
+    if (self.progressBlock) {
+        self.progressBlock(progress);
+    }
+    
+    if (progress == 1.0){
+        
+    }
     NSLog(@"receive data");
 }
 
