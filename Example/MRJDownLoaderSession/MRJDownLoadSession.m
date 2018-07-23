@@ -8,7 +8,7 @@
 
 #import "MRJDownLoadSession.h"
 
-@interface MRJDownLoadSession() <NSURLSessionDownloadDelegate, NSURLSessionDataDelegate>
+@interface MRJDownLoadSession() <NSURLSessionDataDelegate>
 
 /// 下载地址
 @property (nonatomic, strong) NSURL *downUrl;
@@ -101,61 +101,60 @@
 
 #pragma mark NSURLConnectionDataDelegate
     
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-didFinishDownloadingToURL:(NSURL *)location {
-    if (self.completeBlock) {
-        NSError *error = nil;
-        NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];;
-        [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
-        NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
-        self.completeBlock(location.path);
-    }
-}
+//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+//didFinishDownloadingToURL:(NSURL *)location {
+//    if (self.completeBlock) {
+//        NSError *error = nil;
+//        NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];;
+//        [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
+//        NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
+//        self.completeBlock(location.path);
+//    }
+//}
+//
+//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+//      didWriteData:(int64_t)bytesWritten
+// totalBytesWritten:(int64_t)totalBytesWritten
+//totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+//
+//    float progress = (float)totalBytesWritten / totalBytesExpectedToWrite;
+//    if (self.progressBlock) {
+//        self.progressBlock(progress);
+//    }
+//}
+//
+//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+// didResumeAtOffset:(int64_t)fileOffset
+//expectedTotalBytes:(int64_t)expectedTotalBytes {
+//    if (self.errorBlock) {
+//        self.errorBlock(@"下载出错了");
+//    }
+//}
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-      didWriteData:(int64_t)bytesWritten
- totalBytesWritten:(int64_t)totalBytesWritten
-totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-   
-    float progress = (float)totalBytesWritten / totalBytesExpectedToWrite;
-    if (self.progressBlock) {
-        self.progressBlock(progress);
-    }
-}
-    
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
- didResumeAtOffset:(int64_t)fileOffset
-expectedTotalBytes:(int64_t)expectedTotalBytes {
-    if (self.errorBlock) {
-        self.errorBlock(@"下载出错了");
-    }
-}
+#pragma mark NSURLSessionDataDelegate
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
-    
+    NSLog(@"receive data");
+    /** b. 让任务继续正常进行.(如果没有写这行代码, 将不会执行下面的代理方法.) */
+    completionHandler(NSURLSessionResponseAllow);
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
 didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
-didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask {
-    
+    NSLog(@"become down loadtask");
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data {
-    
+    NSLog(@"receive data");
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
  completionHandler:(void (^)(NSCachedURLResponse * _Nullable cachedResponse))completionHandler {
-    
+    NSLog(@"willCacheResponse");
 }
 
 
