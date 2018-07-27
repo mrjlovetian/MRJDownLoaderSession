@@ -8,7 +8,7 @@
 
 #import "MRJDownLoadSession.h"
 
-@interface MRJDownLoadSession() <NSURLSessionDataDelegate>
+@interface MRJDownLoadSession() <NSURLSessionDataDelegate, NSURLSessionDelegate>
 
 /// 下载地址
 @property (nonatomic, strong) NSURL *downUrl;
@@ -199,7 +199,10 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     }
     
     if (progress == 1.0){
-        
+        [self.outPutFileStream close];
+        if (self.completeBlock) {
+            self.completeBlock(self.filePath);
+        }
     }
     NSLog(@"receive data");
 }
@@ -210,5 +213,10 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask {
     NSLog(@"willCacheResponse");
 }
 
+#pragma mark NSURLSessionDelegate
+
+- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(nullable NSError *)error {
+    
+}
 
 @end
