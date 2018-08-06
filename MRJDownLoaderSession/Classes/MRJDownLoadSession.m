@@ -27,10 +27,8 @@
 
 /// 当前文件保存长度
 @property (nonatomic, assign) long long  curreLength;
-
 /// 服务器给定下载文件长度
 @property (nonatomic, assign) long long expectedContentLength;
-
 /// 文件输入输出流，用来保存下载文件
 @property (nonatomic, strong) NSOutputStream *outPutFileStream;
 
@@ -50,14 +48,9 @@
         // 判断在本地是否有文件
         if (![self checkLoaclFileInfo]) {
             // 下载完成
-            // 下载完成
             if (self.completeBlock) {
                 self.completeBlock(self.filePath);
             }
-            //            NSLog(@"下载完成");
-            //            NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-            //            self.task = [session downloadTaskWithResumeData:[self checkLoaclFileInfo]];
-            //            [self.task resume];
             return;
         };
         // 开始下载
@@ -133,44 +126,9 @@
 /// 任务暂停
 - (void)pause {
     [self.task cancel];
-    //    [self.task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
-    //        NSLog(@"filepath = %@", _filePath);
-    //        [[NSUserDefaults standardUserDefaults] setObject:resumeData forKey:_filePath];
-    //        self.task = nil;
-    //    }];
 }
 
 #pragma mark NSURLConnectionDataDelegate
-
-//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-//didFinishDownloadingToURL:(NSURL *)location {
-//    if (self.completeBlock) {
-//        NSError *error = nil;
-//        NSURL *fileDownUrl = [NSURL fileURLWithPath:self.filePath isDirectory:NO];;
-//        [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileDownUrl error:&error];
-//        NSLog(@"nerror=%@\nfileDownUrl=%@-----\n%@", error, fileDownUrl, self.filePath);
-//        self.completeBlock(location.path);
-//    }
-//}
-//
-//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-//      didWriteData:(int64_t)bytesWritten
-// totalBytesWritten:(int64_t)totalBytesWritten
-//totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-//
-//    float progress = (float)totalBytesWritten / totalBytesExpectedToWrite;
-//    if (self.progressBlock) {
-//        self.progressBlock(progress);
-//    }
-//}
-//
-//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-// didResumeAtOffset:(int64_t)fileOffset
-//expectedTotalBytes:(int64_t)expectedTotalBytes {
-//    if (self.errorBlock) {
-//        self.errorBlock(@"下载出错了");
-//    }
-//}
 
 #pragma mark NSURLSessionDataDelegate
 

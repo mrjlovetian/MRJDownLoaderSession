@@ -12,16 +12,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-//    http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81034%E5%BC%A0%E6%95%8F%E7%AF%87.mp3
-//    http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81027%E5%BC%A0%E6%95%8F%E7%AF%87.mp3
-//    http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81038%E9%A3%8E%E6%83%85%E4%B8%87%E7%A7%8D.mp3
-//    http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81034%E5%BC%A0%E6%95%8F%E7%AF%87.mp3
-//    http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81%E7%B3%BB%E5%88%97%E4%B9%8B%E6%B7%AB%E4%B9%B1%E7%9A%84%E7%94%9F%E6%97%A5%E6%99%9A%E4%BC%9A02.mp3
-    NSString *str = @"http://www.dehyc.com/upload/mp3/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81/%E5%B0%91%E5%A6%87%E7%99%BD%E6%B4%81027%E5%BC%A0%E6%95%8F%E7%AF%";
-    for (int i = 87; i < 103; i++) {
-        NSLog(@"%@%d.mp3", str, i);
-    }
     return YES;
 }
 
